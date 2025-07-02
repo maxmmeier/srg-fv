@@ -1,131 +1,167 @@
-import { useState } from 'react';
-import { Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { AddAppointmentOptions } from '../../../../srg-fv-contract/addAppointmentOptions';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { useCallback } from 'react';
 
-interface AddAppointmentModalProps {
-  show: boolean;
+type Props = Readonly<{
+  open: boolean;
   handleClose: () => void;
   handleConfirm: (body: AddAppointmentOptions) => void;
+}>;
+
+interface IAddAppointmentInput {
+  date: string;
+  time: string;
+  appointmentName: string;
+  location: string;
 }
 
+const AddAppointmentSchema = yup.object().shape({
+  date: yup.string().required(),
+  time: yup.string().required(),
+  appointmentName: yup.string().required(),
+  location: yup.string().required(),
+});
+
+const defaultValues: IAddAppointmentInput = {
+  date: '',
+  time: '',
+  appointmentName: '',
+  location: '',
+};
+
 export function AddAppointmentModal({
-  show,
+  open,
   handleClose,
   handleConfirm,
-}: AddAppointmentModalProps) {
+}: Props) {
   const { t } = useTranslation();
 
-  const [validated, setValidated] = useState(false);
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [appointmentName, setAppointmentName] = useState('');
-  const [location, setLocation] = useState('');
+  const { register, control, handleSubmit, reset } =
+    useForm<IAddAppointmentInput>({
+      defaultValues: defaultValues,
+      resolver: yupResolver(AddAppointmentSchema),
+    });
 
-  function handleConfirmInternal() {
-    setValidated(true);
-
-    if (!checkValidity()) {
-      return;
-    }
-
+  const onSubmit = useCallback((data: IAddAppointmentInput) => {
     handleConfirm({
-      timestamp: new Date(`${date} ${time}`)
+      timestamp: new Date(`${data.date} ${data.time}`)
         .toISOString()
         .slice(0, 19)
         .replace('T', ' '),
-      name: appointmentName,
-      location: location,
-    } as AddAppointmentOptions);
+      name: data.appointmentName,
+      location: data.location,
+    });
+    reset(defaultValues);
+  }, []);
 
-    reset();
-  }
-
-  function checkValidity() {
-    if (!date) return false;
-    if (!time) return false;
-    if (!appointmentName) return false;
-    if (!location) return false;
-
-    return true;
-  }
-
-  function reset() {
-    setValidated(false);
-    setDate('');
-    setTime('');
-    setAppointmentName('');
-    setLocation('');
-  }
-
-  function handleCloseInternal() {
+  const close = useCallback(() => {
     handleClose();
-    reset();
-  }
+    reset(defaultValues);
+  }, []);
 
   return (
-    <Modal show={show} onHide={handleCloseInternal}>
-      <Modal.Header closeButton>
-        <Modal.Title>{t('addAppointment')}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Form.Group className='mb-3'>
-            <Form.Label>{t('date')}</Form.Label>
-            <InputGroup>
-              <Form.Control
-                type='date'
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                isInvalid={validated && !date}
-                required></Form.Control>
-              <Form.Control
-                type='time'
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                isInvalid={validated && !time}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('dateFeedback')}
-              </Form.Control.Feedback>
-            </InputGroup>
-          </Form.Group>
-          <Form.Group className='mb-3'>
-            <Form.Label>{t('appointmentName')}</Form.Label>
-            <Form.Control
-              type='text'
-              value={appointmentName}
-              onChange={(e) => setAppointmentName(e.target.value)}
-              isInvalid={validated && !appointmentName}
-              placeholder={t('appointmentNamePlaceholder')}
-              required></Form.Control>
-            <Form.Control.Feedback type='invalid'>
-              {t('appointmentNameFeedback')}
-            </Form.Control.Feedback>
-          </Form.Group>
-          <Form.Group className='mb-3'>
-            <Form.Label>{t('location')}</Form.Label>
-            <Form.Control
-              type='text'
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              isInvalid={validated && !location}
-              placeholder={t('locationPlaceholder')}
-              required></Form.Control>
-            <Form.Control.Feedback type='invalid'>
-              {t('locationFeedback')}
-            </Form.Control.Feedback>
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant='secondary' onClick={handleCloseInternal}>
-          {t('close')}
-        </Button>
-        <Button variant='primary' onClick={handleConfirmInternal}>
-          {t('add')}
-        </Button>
-      </Modal.Footer>
-    </Modal>
+    <>
+      <Dialog open={open} onClose={close} fullWidth={true}>
+        <DialogTitle>{t('addAppointment')}</DialogTitle>
+        <form onSubmit={handleSubmit(onSubmit, (a) => console.log(a))}>
+          <DialogContent>
+            <Stack direction='column' spacing={2}>
+              <Controller
+                name='date'
+                control={control}
+                render={(field) => (
+                  <TextField
+                    {...register('date')}
+                    variant='standard'
+                    type='date'
+                    label={t('date')}
+                    helperText={
+                      field.fieldState.error
+                        ? field.fieldState.error.message
+                        : ''
+                    }
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    sx={{ width: '100%' }}
+                  />
+                )}
+              />
+              <Controller
+                name='time'
+                control={control}
+                render={(field) => (
+                  <TextField
+                    {...register('time')}
+                    variant='standard'
+                    type='time'
+                    label={t('time')}
+                    helperText={
+                      field.fieldState.error
+                        ? field.fieldState.error.message
+                        : ''
+                    }
+                    slotProps={{ inputLabel: { shrink: true } }}
+                    sx={{ width: '100%' }}
+                  />
+                )}
+              />
+              <Controller
+                name='appointmentName'
+                control={control}
+                render={(field) => (
+                  <TextField
+                    {...register('appointmentName')}
+                    variant='standard'
+                    label={t('appointmentName')}
+                    placeholder={t('appointmentNamePlaceholder')}
+                    helperText={
+                      field.fieldState.error
+                        ? field.fieldState.error.message
+                        : ''
+                    }
+                    sx={{ width: '100%' }}
+                  />
+                )}
+              />
+              <Controller
+                name='location'
+                control={control}
+                render={(field) => (
+                  <TextField
+                    {...register('location')}
+                    variant='standard'
+                    label={t('location')}
+                    placeholder={t('locationPlaceholder')}
+                    helperText={
+                      field.fieldState.error
+                        ? field.fieldState.error.message
+                        : ''
+                    }
+                    sx={{ width: '100%' }}
+                  />
+                )}
+              />
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button variant='contained' color='secondary' onClick={close}>
+              {t('close')}
+            </Button>
+            <Button type='submit' variant='contained' color='primary'>
+              {t('add')}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </>
   );
 }

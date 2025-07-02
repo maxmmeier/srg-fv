@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Table } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { Appointment } from '../../../../srg-fv-contract/appointments';
 import axios from 'axios';
@@ -8,13 +7,19 @@ import { AddButton } from '../../shared/AddButton';
 import { DeleteButton } from '../../shared/DeleteButton';
 import { ConfirmationModal } from '../../shared/ConfirmationModal';
 import { AddAppointmentModal } from './AddAppointmentModal';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableBody from '@mui/material/TableBody';
 
 export function Appointments() {
   const { t } = useTranslation();
   const { authenticated, keycloak } = useKeycloak();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [showAdd, setShowAdd] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const [deleteAppointmentId, setDeleteAppointmentId] = useState<number | null>(
     null,
   );
@@ -37,62 +42,63 @@ export function Appointments() {
 
   return (
     <>
-      <Table striped hover>
-        <thead>
-          <tr>
-            <th>{t('date')}</th>
-            <th>{t('appointmentName')}</th>
-            <th>{t('location')}</th>
-            {authenticated && (
-              <th className='text-end'>
-                <AddButton setShow={setShowAdd}></AddButton>
-              </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {appointments.map((appointment) => (
-            <tr key={appointment.id}>
-              <td>
-                {new Date(appointment.timestamp).toLocaleString('de-DE', {
-                  weekday: 'short',
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </td>
-              <td>{appointment.name}</td>
-              <td>{appointment.location}</td>
-
+      <TableContainer sx={{ width: '100%' }}>
+        <Table size='small'>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('date')}</TableCell>
+              <TableCell>{t('appointmentName')}</TableCell>
+              <TableCell>{t('location')}</TableCell>
               {authenticated && (
-                <td className='text-end'>
-                  <DeleteButton
-                    id={appointment.id}
-                    setDeleteId={setDeleteAppointmentId}
-                    setShow={setShowDelete}></DeleteButton>
-                </td>
+                <TableCell align='right'>
+                  <AddButton setShow={setOpenAdd}></AddButton>
+                </TableCell>
               )}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {appointments.map((appointment) => (
+              <TableRow key={appointment.id}>
+                <TableCell>
+                  {new Date(appointment.timestamp).toLocaleString('de-DE', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </TableCell>
+                <TableCell>{appointment.name}</TableCell>
+                <TableCell>{appointment.location}</TableCell>
+                {authenticated && (
+                  <TableCell align='right'>
+                    <DeleteButton
+                      id={appointment.id}
+                      setDeleteId={setDeleteAppointmentId}
+                      setShow={setOpenDelete}></DeleteButton>
+                  </TableCell>
+                )}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       <ConfirmationModal
-        show={showDelete}
-        title={t('deleteMemberTitle', {
+        open={openDelete}
+        title={t('deleteAppointmentTitle', {
           name: `${appointments.find((a) => a.id == deleteAppointmentId)?.name}`,
         })}
-        message={t('deleteMemberMessage', {
+        message={t('deleteAppointmentMessage', {
           name: `${appointments.find((a) => a.id == deleteAppointmentId)?.name}`,
         })}
         buttonText={t('delete')}
         handleClose={() => {
-          setShowDelete(false);
+          setOpenDelete(false);
         }}
         handleConfirm={() => {
-          setShowDelete(false);
+          setOpenDelete(false);
           axios
             .delete(
               import.meta.env.VITE_BACKEND_URL +
@@ -108,12 +114,12 @@ export function Appointments() {
         }}></ConfirmationModal>
 
       <AddAppointmentModal
-        show={showAdd}
+        open={openAdd}
         handleClose={() => {
-          setShowAdd(false);
+          setOpenAdd(false);
         }}
         handleConfirm={(body) => {
-          setShowAdd(false);
+          setOpenAdd(false);
           axios({
             method: 'post',
             url: import.meta.env.VITE_BACKEND_URL + 'appointment/',

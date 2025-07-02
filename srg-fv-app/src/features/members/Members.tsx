@@ -93,7 +93,7 @@ export function Members() {
         maxPage={maxPage}></Pagination>
 
       <ConfirmationModal
-        show={show}
+        open={show}
         title={t('deleteMemberTitle', {
           name: `${members.find((m) => m.id == deleteMemberId)?.lastName}, ${members.find((m) => m.id == deleteMemberId)?.firstName}`,
         })}

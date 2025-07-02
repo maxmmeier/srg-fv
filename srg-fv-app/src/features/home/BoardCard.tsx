@@ -1,4 +1,7 @@
-import { Card } from 'react-bootstrap';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
 
 export function BoardCard({
   imageName,
@@ -12,13 +15,15 @@ export function BoardCard({
   club: string;
 }) {
   return (
-    <Card>
-      <Card.Img variant='top' src={'src/assets/' + imageName} />
-      <Card.Body>
-        <Card.Title>{name}</Card.Title>
-        <Card.Subtitle className='mb-2 text-muted'>{role}</Card.Subtitle>
-        <Card.Text>{club}</Card.Text>
-      </Card.Body>
+    <Card sx={{ width: '20%' }}>
+      <CardMedia sx={{ height: 140 }} image={'src/assets/' + imageName} />
+      <CardContent>
+        <Typography variant='h5'>{name}</Typography>
+        <Typography variant='body1' sx={{ marginBottom: 2 }}>
+          {role}
+        </Typography>
+        <Typography variant='body2'>{club}</Typography>
+      </CardContent>
     </Card>
   );
 }

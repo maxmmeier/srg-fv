@@ -1,37 +1,42 @@
-import { Button, Modal } from 'react-bootstrap';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import { useTranslation } from 'react-i18next';
 
 export function ConfirmationModal({
   title,
   message,
   buttonText,
-  show,
+  open,
   handleClose,
   handleConfirm,
 }: {
   title: string;
   message: string;
   buttonText: string;
-  show: boolean;
+  open: boolean;
   handleClose: () => void;
   handleConfirm: () => void;
 }) {
   const { t } = useTranslation();
 
   return (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>{title}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>{message}</Modal.Body>
-      <Modal.Footer>
-        <Button variant='secondary' onClick={handleClose}>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{message}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button variant='contained' color='secondary' onClick={handleClose}>
           {t('close')}
         </Button>
-        <Button variant='primary' onClick={handleConfirm}>
+        <Button variant='contained' color='primary' onClick={handleConfirm}>
           {buttonText}
         </Button>
-      </Modal.Footer>
-    </Modal>
+      </DialogActions>
+    </Dialog>
   );
 }

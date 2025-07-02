@@ -13,6 +13,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
+import Typography from '@mui/material/Typography';
 
 export function Appointments() {
   const { t } = useTranslation();
@@ -46,9 +47,15 @@ export function Appointments() {
         <Table size='small'>
           <TableHead>
             <TableRow>
-              <TableCell>{t('date')}</TableCell>
-              <TableCell>{t('appointmentName')}</TableCell>
-              <TableCell>{t('location')}</TableCell>
+              <TableCell>
+                <Typography variant='h6'>{t('date')}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant='h6'>{t('appointmentName')}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant='h6'>{t('location')}</Typography>
+              </TableCell>
               {authenticated && (
                 <TableCell align='right'>
                   <AddButton setShow={setOpenAdd}></AddButton>

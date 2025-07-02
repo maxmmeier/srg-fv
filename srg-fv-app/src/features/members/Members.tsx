@@ -1,14 +1,21 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { ShortMembership } from '../../../../srg-fv-contract/shortMembership';
-import { Col, Form, Row, Table } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import useKeycloak from '../../shared/useKeycloak';
 import { ConfirmationModal } from '../../shared/ConfirmationModal';
 import { DownloadPdfButton } from './DownloadPdfButton';
 import { DeleteButton } from '../../shared/DeleteButton';
 import { Pagination } from '../../shared/Pagination';
-import { Search } from 'react-bootstrap-icons';
+import SearchIcon from '@mui/icons-material/Search';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableCell from '@mui/material/TableCell';
+import TextField from '@mui/material/TextField';
+import TableRow from '@mui/material/TableRow';
+import TableBody from '@mui/material/TableBody';
+import Typography from '@mui/material/Typography';
 
 export function Members() {
   const { t } = useTranslation();
@@ -48,44 +55,52 @@ export function Members() {
 
   return (
     <>
-      <Table striped hover>
-        <thead>
-          <tr>
-            <th>{t('firstname')}</th>
-            <th>{t('lastname')}</th>
-            <th style={{ width: '40%' }}>
-              <Form.Group as={Row}>
-                <Form.Label column style={{ maxWidth: 'fit-content' }}>
-                  <Search></Search> {t('search')}
-                </Form.Label>
-                <Col>
-                  <Form.Control
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}></Form.Control>
-                </Col>
-              </Form.Group>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((member) => (
-            <tr key={member.id}>
-              <td>{member.firstName}</td>
-              <td>{member.lastName}</td>
-              <td className='text-end'>
-                <DownloadPdfButton
-                  id={member.id}
-                  config={config}></DownloadPdfButton>
+      <TableContainer sx={{ marginBottom: 2 }}>
+        <Table size='small'>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <Typography variant='h6'>{t('firstname')}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant='h6'>{t('lastname')}</Typography>
+              </TableCell>
+              <TableCell sx={{ width: '40%' }}>
+                <TextField
+                  label={
+                    <>
+                      <SearchIcon /> {t('search')}
+                    </>
+                  }
+                  variant='standard'
+                  value={search}
+                  size='small'
+                  onChange={(e) => setSearch(e.target.value)}
+                  sx={{ width: '100%' }}
+                />
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {members.map((member) => (
+              <TableRow key={member.id}>
+                <TableCell>{member.firstName}</TableCell>
+                <TableCell>{member.lastName}</TableCell>
+                <TableCell className='text-end'>
+                  <DownloadPdfButton
+                    id={member.id}
+                    config={config}></DownloadPdfButton>
 
-                <DeleteButton
-                  id={member.id}
-                  setDeleteId={setDeleteMemberId}
-                  setShow={setShow}></DeleteButton>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+                  <DeleteButton
+                    id={member.id}
+                    setDeleteId={setDeleteMemberId}
+                    setShow={setShow}></DeleteButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       <Pagination
         currentPage={currentPage}

@@ -1,6 +1,6 @@
-import Button from '@mui/material/Button';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from './buttons/Button';
 
 export function DeleteButton({
   id,
@@ -17,11 +17,11 @@ export function DeleteButton({
     <Button
       variant='contained'
       color='error'
-      className='btn-sm ms-3'
       onClick={() => {
         setDeleteId(id);
         setShow(true);
-      }}>
+      }}
+      sx={{ marginLeft: 1 }}>
       {t('delete')}
     </Button>
   );

@@ -1,4 +1,4 @@
-import { Button } from 'react-bootstrap';
+import { Button } from './buttons/Button';
 import useKeycloak from './useKeycloak';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +8,8 @@ export function LogoutButton() {
 
   return (
     <Button
-      variant='secondary'
+      variant='contained'
+      color='secondary'
       onClick={() => {
         keycloak?.logout();
       }}>

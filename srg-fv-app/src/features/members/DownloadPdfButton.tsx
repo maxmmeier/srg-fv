@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { MembershipPdf } from '../../../../srg-fv-contract/membershipPdf';
 import { GetMembershipPdfOptions } from '../../../../srg-fv-contract/getMembershipPdfOptions';
 import axios from 'axios';
-import Button from '@mui/material/Button';
+import { Button } from '../../shared/buttons/Button';
 
 export function DownloadPdfButton({
   id,
@@ -37,7 +37,6 @@ export function DownloadPdfButton({
     <Button
       variant='contained'
       color='secondary'
-      className='btn-sm'
       onClick={() => downloadPdf(id)}>
       {t('downloadPdf')}
     </Button>

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
-import { Button } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { Button } from './buttons/Button';
 
 export function AddButton({
   setShow,
@@ -11,8 +11,8 @@ export function AddButton({
 
   return (
     <Button
-      variant='primary'
-      className='btn-sm ms-3'
+      variant='contained'
+      color='primary'
       onClick={() => {
         setShow(true);
       }}>

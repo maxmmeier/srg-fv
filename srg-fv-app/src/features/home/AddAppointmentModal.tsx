@@ -11,6 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useCallback } from 'react';
 import { Button } from '../../shared/buttons/Button';
+import { FormTexField } from '../../shared/FormTextField';
 
 type Props = Readonly<{
   open: boolean;
@@ -80,18 +81,11 @@ export function AddAppointmentModal({
                 name='date'
                 control={control}
                 render={(field) => (
-                  <TextField
-                    {...register('date')}
-                    variant='standard'
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
                     type='date'
-                    label={t('date')}
-                    helperText={
-                      field.fieldState.error
-                        ? field.fieldState.error.message
-                        : ''
-                    }
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    sx={{ width: '100%' }}
                   />
                 )}
               />
@@ -99,18 +93,11 @@ export function AddAppointmentModal({
                 name='time'
                 control={control}
                 render={(field) => (
-                  <TextField
-                    {...register('time')}
-                    variant='standard'
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
                     type='time'
-                    label={t('time')}
-                    helperText={
-                      field.fieldState.error
-                        ? field.fieldState.error.message
-                        : ''
-                    }
-                    slotProps={{ inputLabel: { shrink: true } }}
-                    sx={{ width: '100%' }}
                   />
                 )}
               />
@@ -118,17 +105,10 @@ export function AddAppointmentModal({
                 name='appointmentName'
                 control={control}
                 render={(field) => (
-                  <TextField
-                    {...register('appointmentName')}
-                    variant='standard'
-                    label={t('appointmentName')}
-                    placeholder={t('appointmentNamePlaceholder')}
-                    helperText={
-                      field.fieldState.error
-                        ? field.fieldState.error.message
-                        : ''
-                    }
-                    sx={{ width: '100%' }}
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
                   />
                 )}
               />
@@ -136,17 +116,10 @@ export function AddAppointmentModal({
                 name='location'
                 control={control}
                 render={(field) => (
-                  <TextField
-                    {...register('location')}
-                    variant='standard'
-                    label={t('location')}
-                    placeholder={t('locationPlaceholder')}
-                    helperText={
-                      field.fieldState.error
-                        ? field.fieldState.error.message
-                        : ''
-                    }
-                    sx={{ width: '100%' }}
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
                   />
                 )}
               />

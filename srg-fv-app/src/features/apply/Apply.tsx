@@ -24,6 +24,6 @@ export function Apply() {
           }}></ApplyForm>
       );
     case ApplyState.ThankYou:
-      return <ThankYou></ThankYou>;
+      return <ThankYou />;
   }
 }

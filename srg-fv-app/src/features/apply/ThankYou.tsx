@@ -1,14 +1,17 @@
-import { HeartFill } from 'react-bootstrap-icons';
 import { useTranslation } from 'react-i18next';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import Typography from '@mui/material/Typography';
 
 export function ThankYou() {
   const { t } = useTranslation();
 
   return (
     <div>
-      <span className='me-1'>{t('thankYou')}</span>
+      <Typography component='span' sx={{ marginRight: 1 }}>
+        {t('thankYou')}
+      </Typography>
 
-      <HeartFill color='red'></HeartFill>
+      <FavoriteIcon color='error'></FavoriteIcon>
     </div>
   );
 }

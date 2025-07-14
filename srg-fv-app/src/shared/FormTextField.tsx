@@ -27,6 +27,7 @@ export function FormTexField({
       helperText={fieldState.error ? fieldState.error.message : ''}
       slotProps={{
         inputLabel: type === 'time' || type === 'date' ? { shrink: true } : {},
+        formHelperText: { error: true },
       }}
       sx={{ width: '100%' }}
     />

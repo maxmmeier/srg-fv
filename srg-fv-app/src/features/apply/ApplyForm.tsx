@@ -1,533 +1,408 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
-import SignatureCanvas from 'react-signature-canvas';
-import { useContainerDimensions } from './WrapperDimensions';
-import './ApplyForm.css';
-import { formatIban, validateIban } from './Iban';
-import axios from 'axios';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useCallback } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { ApplyMembershipOptions } from '../../../../srg-fv-contract/applyMembershipOptions';
-import { Eraser } from 'react-bootstrap-icons';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { InferType } from 'yup';
+import Typography from '@mui/material/Typography';
+import { FormTexField } from '../../shared/FormTextField';
+import Grid from '@mui/material/Grid';
+import { FormSignature } from '../../shared/FormSignature';
+import { FormCheckbox } from '../../shared/FormCheckbox';
+import { Button } from '../../shared/buttons/Button';
 
-interface ApplyFormProps {
+type Props = Readonly<{
   submit: () => void;
-}
+}>;
 
-export function ApplyForm({ submit }: ApplyFormProps) {
-  const [validated, setValidated] = useState(false);
-  const [lastName, setLastName] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [email, setEmail] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [street, setStreet] = useState('');
-  const [zip, setZip] = useState('');
-  const [city, setCity] = useState('');
-  const [isMemberNotAccountHolder, setIsMemberNotAccountHolder] =
-    useState(false);
-  const [lastNameSepa, setLastNameSepa] = useState('');
-  const [firstNameSepa, setFirstNameSepa] = useState('');
-  const [streetSepa, setStreetSepa] = useState('');
-  const [zipSepa, setZipSepa] = useState('');
-  const [citySepa, setCitySepa] = useState('');
-  const [bank, setBank] = useState('');
-  const [bic, setBic] = useState('');
-  const [iban, setIban] = useState('');
-  const [mandate, setMandate] = useState('');
-
-  const canvasWrapperMember = useRef(null);
-  const canvasWrapperSepa = useRef(null);
-  const memberSignature = useContainerDimensions(canvasWrapperMember);
-  const sepaSignature = useContainerDimensions(canvasWrapperSepa);
-  const memberSignatureCanvas = useRef<SignatureCanvas>(null);
-  const sepaSignatureCanvas = useRef<SignatureCanvas>(null);
-  const [isMemberSignatureSet, setIsMemberSignatureSet] = useState(false);
-  const [isSepaSignatureSet, setIsSepaSignatureSet] = useState(false);
-  const [refAquired, setRefAquired] = useState(false);
-
+export function ApplyForm({ submit }: Props) {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (!memberSignatureCanvas.current || !sepaSignatureCanvas.current) {
-      return;
-    }
-    setRefAquired(true);
+  type IApplyInput = InferType<typeof ApplySchema>;
 
-    memberSignatureCanvas.current?.clear();
-    sepaSignatureCanvas.current?.clear();
-  }, [refAquired]);
+  const defaultValues: IApplyInput = {
+    lastName: '',
+    firstName: '',
+    email: '',
+    dateOfBirth: '',
+    street: '',
+    zip: '',
+    city: '',
+    memberSignature: '',
+    isMemberNotAccountHolder: false,
+    lastNameSepa: '',
+    firstNameSepa: '',
+    streetSepa: '',
+    zipSepa: '',
+    citySepa: '',
+    bank: '',
+    bic: '',
+    iban: '',
+    mandate: '',
+    sepaSignature: '',
+  };
 
-  function checkValidity() {
-    if (!lastName) return false;
-    if (!firstName) return false;
-    if (!email) return false;
-    if (
-      !dateOfBirth ||
-      new Date(dateOfBirth) >
-        new Date(
-          new Date().getFullYear() - 10,
-          new Date().getMonth(),
-          new Date().getDay(),
-        )
-    ) {
-      return false;
-    }
-    if (!street) return false;
-    if (!zip) return false;
-    if (!city) return false;
-    if (!isMemberSignatureSet) return false;
-    if (isMemberNotAccountHolder && !lastNameSepa) return false;
-    if (isMemberNotAccountHolder && !firstNameSepa) return false;
-    if (isMemberNotAccountHolder && !streetSepa) return false;
-    if (isMemberNotAccountHolder && !zipSepa) return false;
-    if (isMemberNotAccountHolder && !citySepa) return false;
-    if (!bank) return false;
-    if (!bic) return false;
-    if (!validateIban(iban)) return false;
-    if (!mandate) return false;
-    if (!isSepaSignatureSet) return false;
+  const ApplySchema = yup.object().shape({
+    lastName: yup.string().required(t('lastNameFeedback')),
+    firstName: yup.string().required(t('firstNameFeedback')),
+    email: yup.string().required(t('emailFeedback')),
+    dateOfBirth: yup.string().required(t('dateOfBirthFeedback')),
+    street: yup.string().required(t('streetFeedback')),
+    zip: yup.string().required(t('zipFeedback')),
+    city: yup.string().required(t('cityFeedback')),
+    memberSignature: yup.string().required(t('signatureFeedback')),
+    isMemberNotAccountHolder: yup.boolean().required(),
+    lastNameSepa: yup.string().defined(t('lastNameFeedback')),
+    firstNameSepa: yup.string().defined(t('firstNameFeedback')),
+    streetSepa: yup.string().defined(t('streetFeedback')),
+    zipSepa: yup.string().defined(t('zipFeedback')),
+    citySepa: yup.string().defined(t('cityFeedback')),
+    bank: yup.string().required(t('bankFeedback')),
+    bic: yup.string().required(t('bicFeedback')),
+    iban: yup.string().required(t('ibanFeedback')),
+    mandate: yup.string().required(t('mandateFeedback')),
+    sepaSignature: yup.string().required(t('signatureFeedback')),
+  });
 
-    return true;
-  }
+  const { register, control, handleSubmit, reset, watch, setValue } =
+    useForm<IApplyInput>({
+      defaultValues: defaultValues,
+      resolver: yupResolver(ApplySchema),
+    });
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    e.stopPropagation();
-    setValidated(true);
+  const showSepa = watch('isMemberNotAccountHolder', true);
 
-    if (!checkValidity()) {
-      return;
-    }
+  const onSubmit = useCallback(async (data: IApplyInput) => {
+    var result: ApplyMembershipOptions = {
+      lastName: data.lastName,
+      firstName: data.firstName,
+      email: data.email,
+      dateOfBirth: new Date(`${data.dateOfBirth}`)
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' '),
+      street: data.street,
+      zip: data.zip,
+      city: data.city,
+      memberSignature: data.memberSignature,
+      isMemberNotAccountHolder: data.isMemberNotAccountHolder,
+      lastNameSepa: data.lastNameSepa,
+      firstNameSepa: data.firstNameSepa,
+      streetSepa: data.streetSepa,
+      zipSepa: data.zipSepa,
+      citySepa: data.citySepa,
+      bank: data.bank,
+      bic: data.bic,
+      iban: data.iban,
+      mandate: data.mandate,
+      sepaSignature: data.sepaSignature,
+    };
 
-    var result = {
-      lastName,
-      firstName,
-      email,
-      dateOfBirth,
-      street,
-      zip,
-      city,
-      memberSignature: memberSignatureCanvas.current
-        ?.getCanvas()
-        .toDataURL('image/jpeg'),
-      isMemberNotAccountHolder,
-      lastNameSepa,
-      firstNameSepa,
-      streetSepa,
-      zipSepa,
-      citySepa,
-      bank,
-      bic,
-      iban,
-      mandate,
-      sepaSignature: sepaSignatureCanvas.current
-        ?.getCanvas()
-        .toDataURL('image/jpeg'),
-    } as ApplyMembershipOptions;
+    console.log(result);
+    return;
 
     await axios
       .post(import.meta.env.VITE_BACKEND_URL + 'membership/apply', result)
       .then(() => submit());
-  }
+    reset(defaultValues);
+    submit();
+  }, []);
+
   return (
-    <>
-      <Form noValidate onSubmit={async (e) => await onSubmit(e)}>
-        <Row>
-          <div className='mb-3'>{t('applyForMembershipIntro')}</div>
-        </Row>
+    <form onSubmit={handleSubmit(onSubmit, (data) => console.warn(data))}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12 }}>
+          <Typography>{t('applyForMembershipIntro')}</Typography>
+        </Grid>
 
-        <Row xs={1} sm={1} md={2}>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('lastname')}</Form.Label>
-              <Form.Control
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                isInvalid={validated && !lastName}
-                type='text'
-                placeholder={t('lastnamePlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('lastnameFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('firstname')}</Form.Label>
-              <Form.Control
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                isInvalid={validated && !firstName}
-                type='text'
-                placeholder={t('firstnamePlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('firstnameFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='lastName'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='firstName'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
 
-        <Row xs={1} sm={1} md={2}>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('email')}</Form.Label>
-              <Form.Control
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                isInvalid={validated && !email}
-                type='text'
-                placeholder={t('emailPlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('emailFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('dateOfBirth')}</Form.Label>
-              <Form.Control
-                value={dateOfBirth}
-                onChange={(e) => setDateOfBirth(e.target.value)}
-                isInvalid={
-                  validated &&
-                  (!dateOfBirth ||
-                    new Date(dateOfBirth) >
-                      new Date(
-                        new Date().getFullYear() - 10,
-                        new Date().getMonth(),
-                        new Date().getDay(),
-                      ))
-                }
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='email'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='dateOfBirth'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
                 type='date'
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('dateOfBirthFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
+              />
+            )}
+          />
+        </Grid>
 
-        <Row xs={1} sm={1} md={2}>
-          <Col>
-            {' '}
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('street')}</Form.Label>
-              <Form.Control
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
-                isInvalid={validated && !street}
-                type='text'
-                placeholder={t('streetPlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('streetFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('zipAndCity')}</Form.Label>
-              <InputGroup hasValidation>
-                <Form.Control
-                  value={zip}
-                  onChange={(e) => setZip(e.target.value)}
-                  isInvalid={validated && !zip}
-                  type='number'
-                  placeholder={t('zipPlaceholder')}
-                  required></Form.Control>
-                <Form.Control
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  isInvalid={validated && !city}
-                  type='text'
-                  placeholder={t('cityPlaceholder')}
-                  required></Form.Control>
-                <Form.Control.Feedback type='invalid'>
-                  {t('zipAndCityFeedback')}
-                </Form.Control.Feedback>
-              </InputGroup>
-            </Form.Group>
-          </Col>
-        </Row>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='street'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
+        <Grid size={{ xs: 6, md: 3 }}>
+          <Controller
+            name='zip'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
+        <Grid size={{ xs: 6, md: 3 }}>
+          <Controller
+            name='city'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
 
-        <Row>
-          <Form.Group className='mb-3'>
-            <Form.Label>{t('signatureMemberOrParent')}</Form.Label>
-            <div className='input-group'>
-              <div
-                className={
-                  'form-control signature position-relative ' +
-                  (validated && !isMemberSignatureSet ? 'is-invalid' : '')
-                }
-                ref={canvasWrapperMember}>
-                <SignatureCanvas
-                  backgroundColor='rgb(255,255,255)'
-                  ref={memberSignatureCanvas}
-                  canvasProps={{
-                    width: memberSignature.width,
-                    height: memberSignature.height,
-                  }}
-                  onEnd={() => {
-                    setIsMemberSignatureSet(
-                      (memberSignatureCanvas.current?.isEmpty() ?? true) ===
-                        false,
-                    );
-                  }}></SignatureCanvas>
-                <Button
-                  className='clear-signature'
-                  variant='secondary'
-                  onClick={() => {
-                    memberSignatureCanvas.current?.clear();
-                    setIsMemberSignatureSet(
-                      (memberSignatureCanvas.current?.isEmpty() ?? true) ===
-                        false,
-                    );
-                  }}>
-                  <Eraser></Eraser>
-                </Button>
-              </div>
-              <Form.Control.Feedback type='invalid'>
-                {t('signatureFeedback')}
-              </Form.Control.Feedback>
-            </div>
-          </Form.Group>
-        </Row>
+        <Grid size={{ xs: 12, md: 12 }}>
+          <Controller
+            name='memberSignature'
+            control={control}
+            render={(field) => (
+              <FormSignature
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+                setValue={(value: string) => setValue(field.field.name, value)}
+              />
+            )}
+          />
+        </Grid>
 
-        <Row>
-          <h3>{t('Sepa')}</h3>
-        </Row>
+        <Grid size={{ xs: 12 }}>
+          <Typography variant='h6' sx={{ marginBottom: 1 }}>
+            {t('Sepa')}
+          </Typography>
 
-        <Row>
-          <p>{t('SepaIntro')}</p>
-          <p>
-            <small>{t('SepaNotice')}</small>
-          </p>
-          <p>
-            <strong>{t('SepaInfos')}</strong>
-          </p>
-        </Row>
+          <Typography>{t('SepaIntro')}</Typography>
+          <Typography variant='subtitle1'>{t('SepaNotice')}</Typography>
+          <Typography variant='subtitle2' sx={{ fontWeight: 'bold' }}>
+            {t('SepaInfos')}
+          </Typography>
+        </Grid>
 
-        <Row>
-          <Form.Group className='mb-3'>
-            <Form.Check
-              defaultChecked={isMemberNotAccountHolder}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setIsMemberNotAccountHolder(e.target.checked)
-              }
-              type='checkbox'
-              label={t('MemberNotAccountHolder')}></Form.Check>
-          </Form.Group>
-        </Row>
+        <Grid size={{ xs: 12, md: 12 }}>
+          <Controller
+            name='isMemberNotAccountHolder'
+            control={control}
+            render={(field) => (
+              <FormCheckbox
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
 
-        {isMemberNotAccountHolder ? (
+        {showSepa ? (
           <>
-            <Row xs={1} sm={1} md={2}>
-              <Col>
-                <Form.Group className='mb-3'>
-                  <Form.Label>{t('lastname')}</Form.Label>
-                  <Form.Control
-                    value={lastNameSepa}
-                    onChange={(e) => setLastNameSepa(e.target.value)}
-                    isInvalid={
-                      validated && isMemberNotAccountHolder && !lastNameSepa
-                    }
-                    type='text'
-                    placeholder={t('lastnamePlaceholder')}
-                    required></Form.Control>
-                  <Form.Control.Feedback type='invalid'>
-                    {t('lastnameFeedback')}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group className='mb-3'>
-                  <Form.Label>{t('firstname')}</Form.Label>
-                  <Form.Control
-                    value={firstNameSepa}
-                    onChange={(e) => setFirstNameSepa(e.target.value)}
-                    isInvalid={
-                      validated && isMemberNotAccountHolder && !firstNameSepa
-                    }
-                    type='text'
-                    placeholder={t('firstnamePlaceholder')}
-                    required></Form.Control>
-                  <Form.Control.Feedback type='invalid'>
-                    {t('firstnameFeedback')}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-            </Row>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Controller
+                name='lastNameSepa'
+                control={control}
+                render={(field) => (
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Controller
+                name='firstNameSepa'
+                control={control}
+                render={(field) => (
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
+                  />
+                )}
+              />
+            </Grid>
 
-            <Row xs={1} sm={1} md={2}>
-              <Col>
-                {' '}
-                <Form.Group className='mb-3'>
-                  <Form.Label>{t('street')}</Form.Label>
-                  <Form.Control
-                    value={streetSepa}
-                    onChange={(e) => setStreetSepa(e.target.value)}
-                    isInvalid={
-                      validated && isMemberNotAccountHolder && !streetSepa
-                    }
-                    type='text'
-                    placeholder={t('streetPlaceholder')}
-                    required></Form.Control>
-                  <Form.Control.Feedback type='invalid'>
-                    {t('streetFeedback')}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group className='mb-3'>
-                  <Form.Label>{t('zipAndCity')}</Form.Label>
-                  <InputGroup hasValidation>
-                    <Form.Control
-                      value={zipSepa}
-                      onChange={(e) => setZipSepa(e.target.value)}
-                      isInvalid={
-                        validated && isMemberNotAccountHolder && !zipSepa
-                      }
-                      type='number'
-                      placeholder={t('zipPlaceholder')}
-                      required></Form.Control>
-                    <Form.Control
-                      value={citySepa}
-                      onChange={(e) => setCitySepa(e.target.value)}
-                      isInvalid={
-                        validated && isMemberNotAccountHolder && !citySepa
-                      }
-                      type='text'
-                      placeholder={t('cityPlaceholder')}
-                      required></Form.Control>
-                    <Form.Control.Feedback type='invalid'>
-                      {t('zipAndCityFeedback')}
-                    </Form.Control.Feedback>
-                  </InputGroup>
-                </Form.Group>
-              </Col>
-            </Row>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Controller
+                name='streetSepa'
+                control={control}
+                render={(field) => (
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Controller
+                name='zipSepa'
+                control={control}
+                render={(field) => (
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Controller
+                name='citySepa'
+                control={control}
+                render={(field) => (
+                  <FormTexField
+                    {...register(field.field.name)}
+                    fieldName={field.field.name}
+                    fieldState={field.fieldState}
+                  />
+                )}
+              />
+            </Grid>
           </>
         ) : (
           <></>
         )}
 
-        <Row xs={1} sm={1} md={2}>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('bank')}</Form.Label>
-              <Form.Control
-                value={bank}
-                onChange={(e) => setBank(e.target.value)}
-                isInvalid={validated && !bank}
-                type='text'
-                placeholder={t('bankPlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('bankFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('bic')}</Form.Label>
-              <Form.Control
-                value={bic}
-                onChange={(e) => setBic(e.target.value)}
-                isInvalid={validated && !bic}
-                type='text'
-                placeholder={t('bicPlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('bicFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='bank'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='bic'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
 
-        <Row xs={1} sm={1} md={2}>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('iban')}</Form.Label>
-              <Form.Control
-                value={iban}
-                onChange={(e) => {
-                  setIban(formatIban(e.target.value));
-                }}
-                isInvalid={validated && !validateIban(iban)}
-                type='text'
-                placeholder={t('ibanPlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('ibanFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-          <Col>
-            <Form.Group className='mb-3'>
-              <Form.Label>{t('mandate')}</Form.Label>
-              <Form.Control
-                value={mandate}
-                onChange={(e) => setMandate(e.target.value)}
-                isInvalid={validated && !mandate}
-                type='text'
-                placeholder={t('mandatePlaceholder')}
-                required></Form.Control>
-              <Form.Control.Feedback type='invalid'>
-                {t('mandateFeedback')}
-              </Form.Control.Feedback>
-            </Form.Group>
-          </Col>
-        </Row>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='iban'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Controller
+            name='mandate'
+            control={control}
+            render={(field) => (
+              <FormTexField
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+              />
+            )}
+          />
+        </Grid>
 
-        <Row>
-          <Form.Group className='mb-3'>
-            <Form.Label>{t('signatureSepa')}</Form.Label>
-            <div className='input-group'>
-              <div
-                className={
-                  'form-control signature position-relative ' +
-                  (validated && !isSepaSignatureSet ? 'is-invalid' : '')
-                }
-                ref={canvasWrapperSepa}>
-                <SignatureCanvas
-                  backgroundColor='rgb(255,255,255)'
-                  ref={sepaSignatureCanvas}
-                  canvasProps={{
-                    width: sepaSignature.width,
-                    height: sepaSignature.height,
-                  }}
-                  onEnd={() => {
-                    setIsSepaSignatureSet(
-                      (sepaSignatureCanvas.current?.isEmpty() ?? true) ===
-                        false,
-                    );
-                  }}></SignatureCanvas>
-                <Button
-                  className='clear-signature'
-                  variant='secondary'
-                  onClick={() => {
-                    sepaSignatureCanvas.current?.clear();
-                    setIsSepaSignatureSet(
-                      (sepaSignatureCanvas.current?.isEmpty() ?? true) ===
-                        false,
-                    );
-                  }}>
-                  <Eraser></Eraser>
-                </Button>
-              </div>
-              <Form.Control.Feedback type='invalid'>
-                {t('signatureFeedback')}
-              </Form.Control.Feedback>
-            </div>
-          </Form.Group>
-        </Row>
+        <Grid size={{ xs: 12, md: 12 }}>
+          <Controller
+            name='sepaSignature'
+            control={control}
+            render={(field) => (
+              <FormSignature
+                {...register(field.field.name)}
+                fieldName={field.field.name}
+                fieldState={field.fieldState}
+                setValue={(value: string) => setValue(field.field.name, value)}
+              />
+            )}
+          />
+        </Grid>
+      </Grid>
 
-        <Button variant='primary' type='submit' className='float-end'>
-          {t('submit')}
-        </Button>
-      </Form>
-    </>
+      <Button
+        variant='contained'
+        color='primary'
+        type='submit'
+        sx={{ float: 'right', marginTop: 2 }}>
+        {t('submit')}
+      </Button>
+    </form>
   );
 }

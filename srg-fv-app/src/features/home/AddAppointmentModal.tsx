@@ -4,11 +4,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { InferType } from 'yup';
 import { useCallback } from 'react';
 import { Button } from '../../shared/buttons/Button';
 import { FormTexField } from '../../shared/FormTextField';
@@ -19,12 +19,7 @@ type Props = Readonly<{
   handleConfirm: (body: AddAppointmentOptions) => void;
 }>;
 
-interface IAddAppointmentInput {
-  date: string;
-  time: string;
-  appointmentName: string;
-  location: string;
-}
+type IAddAppointmentInput = InferType<typeof AddAppointmentSchema>;
 
 const AddAppointmentSchema = yup.object().shape({
   date: yup.string().required(),
@@ -74,7 +69,7 @@ export function AddAppointmentModal({
     <>
       <Dialog open={open} onClose={close} fullWidth={true}>
         <DialogTitle>{t('addAppointment')}</DialogTitle>
-        <form onSubmit={handleSubmit(onSubmit, (a) => console.log(a))}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogContent>
             <Stack direction='column' spacing={2}>
               <Controller

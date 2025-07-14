@@ -1,9 +1,9 @@
 import { PropsWithChildren } from 'react';
 import { Navbar } from './Navbar';
-import { Container } from 'react-bootstrap';
 import { Footer } from './Footer';
 import './Page.css';
 import useKeycloak from './useKeycloak';
+import Container from '@mui/material/Container';
 
 interface PageProps {
   header: string;

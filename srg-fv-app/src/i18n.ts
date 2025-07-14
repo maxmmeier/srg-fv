@@ -50,7 +50,7 @@ i18n.use(initReactI18next).init({
         bankPlaceholder: 'Bitte Namen der Bank eintragen',
         bic: 'BIC',
         bicPlaceholder: 'Bitte BIC eintragen',
-        signatureSepa: 'Unterschrift Kontoinhaber/in',
+        sepaSignature: 'Unterschrift Kontoinhaber/in',
         iban: 'IBAN',
         ibanPlaceholder: 'Bitte IBAN eintragen',
         mandate: 'Mandatsreferenz',

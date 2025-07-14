@@ -32,10 +32,6 @@ export function FormSignature({ fieldName, fieldState, setValue }: Props) {
   }, [refAquired]);
 
   const handleEnd = useCallback(() => {
-    console.log('Test');
-    console.log(
-      signatureCanvas.current?.getCanvas().toDataURL('image/jpeg') ?? '',
-    );
     setValue(
       signatureCanvas.current?.getCanvas().toDataURL('image/jpeg') ?? '',
     );
@@ -45,8 +41,6 @@ export function FormSignature({ fieldName, fieldState, setValue }: Props) {
     signatureCanvas.current?.clear();
     setValue('');
   }, []);
-
-  console.log(dimensions);
 
   return (
     <>

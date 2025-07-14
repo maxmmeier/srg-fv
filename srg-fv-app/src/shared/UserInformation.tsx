@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useKeycloak from './useKeycloak';
+import Typography from '@mui/material/Typography';
 
 export function UserInformation() {
   const isRun = useRef<boolean>(false);
@@ -16,5 +17,5 @@ export function UserInformation() {
     })();
   }, []);
 
-  return <>{name}</>;
+  return <Typography sx={{ marginRight: 2, lineHeight: 3 }}>{name}</Typography>;
 }

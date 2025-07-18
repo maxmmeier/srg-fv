@@ -6,9 +6,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Stack from '@mui/material/Stack';
 import { Controller, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { InferType } from 'yup';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useCallback } from 'react';
 import { Button } from '../../shared/buttons/Button';
 import { FormTexField } from '../../shared/FormTextField';
@@ -19,16 +18,16 @@ type Props = Readonly<{
   handleConfirm: (body: AddAppointmentOptions) => void;
 }>;
 
-type IAddAppointmentInput = InferType<typeof AddAppointmentSchema>;
+type AddAppointmentInput = z.infer<typeof AddAppointmentSchema>;
 
-const AddAppointmentSchema = yup.object().shape({
-  date: yup.string().required(),
-  time: yup.string().required(),
-  appointmentName: yup.string().required(),
-  location: yup.string().required(),
+const AddAppointmentSchema = z.object({
+  date: z.string().min(1),
+  time: z.string().min(1),
+  appointmentName: z.string().min(1),
+  location: z.string().min(1),
 });
 
-const defaultValues: IAddAppointmentInput = {
+const defaultValues: AddAppointmentInput = {
   date: '',
   time: '',
   appointmentName: '',
@@ -43,12 +42,12 @@ export function AddAppointmentModal({
   const { t } = useTranslation();
 
   const { register, control, handleSubmit, reset } =
-    useForm<IAddAppointmentInput>({
+    useForm<AddAppointmentInput>({
       defaultValues: defaultValues,
-      resolver: yupResolver(AddAppointmentSchema),
+      resolver: zodResolver(AddAppointmentSchema),
     });
 
-  const onSubmit = useCallback((data: IAddAppointmentInput) => {
+  const onSubmit = useCallback((data: AddAppointmentInput) => {
     handleConfirm({
       timestamp: new Date(`${data.date} ${data.time}`)
         .toISOString()

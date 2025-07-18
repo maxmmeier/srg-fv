@@ -1,17 +1,17 @@
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ApplyMembershipOptions } from '../../../../srg-fv-contract/applyMembershipOptions';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { InferType } from 'yup';
 import Typography from '@mui/material/Typography';
 import { FormTexField } from '../../shared/FormTextField';
 import Grid from '@mui/material/Grid';
 import { FormSignature } from '../../shared/FormSignature';
 import { FormCheckbox } from '../../shared/FormCheckbox';
 import { Button } from '../../shared/buttons/Button';
+import * as z from 'zod';
+import { formatIban, validateIban } from './Iban';
 
 type Props = Readonly<{
   submit: () => void;
@@ -20,9 +20,9 @@ type Props = Readonly<{
 export function ApplyForm({ submit }: Props) {
   const { t } = useTranslation();
 
-  type IApplyInput = InferType<typeof ApplySchema>;
+  type ApplyInput = z.infer<typeof ApplySchema>;
 
-  const defaultValues: IApplyInput = {
+  const defaultValues: ApplyInput = {
     lastName: '',
     firstName: '',
     email: '',
@@ -44,37 +44,86 @@ export function ApplyForm({ submit }: Props) {
     sepaSignature: '',
   };
 
-  const ApplySchema = yup.object().shape({
-    lastName: yup.string().required(t('lastNameFeedback')),
-    firstName: yup.string().required(t('firstNameFeedback')),
-    email: yup.string().required(t('emailFeedback')),
-    dateOfBirth: yup.string().required(t('dateOfBirthFeedback')),
-    street: yup.string().required(t('streetFeedback')),
-    zip: yup.string().required(t('zipFeedback')),
-    city: yup.string().required(t('cityFeedback')),
-    memberSignature: yup.string().required(t('signatureFeedback')),
-    isMemberNotAccountHolder: yup.boolean().required(),
-    lastNameSepa: yup.string().defined(t('lastNameFeedback')),
-    firstNameSepa: yup.string().defined(t('firstNameFeedback')),
-    streetSepa: yup.string().defined(t('streetFeedback')),
-    zipSepa: yup.string().defined(t('zipFeedback')),
-    citySepa: yup.string().defined(t('cityFeedback')),
-    bank: yup.string().required(t('bankFeedback')),
-    bic: yup.string().required(t('bicFeedback')),
-    iban: yup.string().required(t('ibanFeedback')),
-    mandate: yup.string().required(t('mandateFeedback')),
-    sepaSignature: yup.string().required(t('signatureFeedback')),
-  });
+  const ApplySchema = z
+    .object({
+      lastName: z.string().min(1, t('lastNameFeedback')),
+      firstName: z.string().min(1, t('firstNameFeedback')),
+      email: z.email(t('emailFeedback')),
+      dateOfBirth: z.iso.date(),
+      street: z.string().min(1, t('streetFeedback')),
+      zip: z.string().regex(/^\d{5}$/, t('zipFeedback')),
+      city: z.string().min(1, t('cityFeedback')),
+      memberSignature: z.string().min(1, t('signatureFeedback')),
+      isMemberNotAccountHolder: z.boolean(),
+      lastNameSepa: z.string(),
+      firstNameSepa: z.string(),
+      streetSepa: z.string(),
+      zipSepa: z.string(),
+      citySepa: z.string(),
+      bank: z.string().min(1, t('bankFeedback')),
+      bic: z.string().min(1, t('bicFeedback')),
+      iban: z.string().min(1, t('ibanFeedback')),
+      mandate: z.string().min(1, t('mandateFeedback')),
+      sepaSignature: z.string().min(1, t('signatureFeedback')),
+    })
+    .refine(
+      (data) => !data.isMemberNotAccountHolder || data.lastNameSepa.length > 0,
+      {
+        error: t('lastNameFeedback'),
+        path: ['lastNameSepa'],
+      },
+    )
+    .refine(
+      (data) => !data.isMemberNotAccountHolder || data.firstNameSepa.length > 0,
+      {
+        error: t('firstNameFeedback'),
+        path: ['firstNameSepa'],
+      },
+    )
+    .refine(
+      (data) => !data.isMemberNotAccountHolder || data.streetSepa.length > 0,
+      {
+        error: t('streetFeedback'),
+        path: ['streetSepa'],
+      },
+    )
+    .refine(
+      (data) => !data.isMemberNotAccountHolder || data.zipSepa.length > 0,
+      {
+        error: t('zipFeedback'),
+        path: ['zipSepa'],
+      },
+    )
+    .refine(
+      (data) => !data.isMemberNotAccountHolder || data.citySepa.length > 0,
+      {
+        error: t('cityFeedback'),
+        path: ['citySepa'],
+      },
+    )
+    .refine((data) => validateIban(data.iban), {
+      error: t('ibanInvalidFeedback'),
+      path: ['iban'],
+    })
+    .refine(
+      (data) =>
+        new Date(data.dateOfBirth) <
+        new Date(new Date().setFullYear(new Date().getFullYear() - 10)),
+      {
+        error: t('dateOfBirthFeedback'),
+        path: ['dateOfBirth'],
+      },
+    );
 
   const { register, control, handleSubmit, reset, watch, setValue } =
-    useForm<IApplyInput>({
+    useForm<ApplyInput>({
       defaultValues: defaultValues,
-      resolver: yupResolver(ApplySchema),
+      resolver: zodResolver(ApplySchema),
     });
 
   const showSepa = watch('isMemberNotAccountHolder', true);
 
-  const onSubmit = useCallback(async (data: IApplyInput) => {
+  const onSubmit = useCallback(async (data: ApplyInput) => {
     var result: ApplyMembershipOptions = {
       lastName: data.lastName,
       firstName: data.firstName,
@@ -95,13 +144,10 @@ export function ApplyForm({ submit }: Props) {
       citySepa: data.citySepa,
       bank: data.bank,
       bic: data.bic,
-      iban: data.iban,
+      iban: formatIban(data.iban),
       mandate: data.mandate,
       sepaSignature: data.sepaSignature,
     };
-
-    console.log(result);
-    return;
 
     await axios
       .post(import.meta.env.VITE_BACKEND_URL + 'membership/apply', result)

@@ -65,6 +65,7 @@ i18n.use(initReactI18next).init({
         bankFeedback: 'Bitte Namen der Bank eintragen!',
         bicFeedback: 'Bitte BIC eintragen!',
         ibanFeedback: 'Bitte IBAN eintragen!',
+        ibanInvalidFeedback: 'Die eingegebene IBAN ist nicht valide.',
         mandateFeedback: 'Bitte Mandatsreferenz eintragen!',
         signatureFeedback: 'Bitte unterschreiben!',
         login: 'Login',

@@ -21,13 +21,18 @@ export function Footer() {
           <Link
             href='https://github.com/maxmmeier/srg-fv'
             underline='hover'
+            color='textSecondary'
             sx={{ marginRight: 1 }}>
             {t('source')}
           </Link>
-          <Link href='datenschutz' underline='hover' sx={{ marginRight: 1 }}>
+          <Link
+            href='datenschutz'
+            underline='hover'
+            color='textSecondary'
+            sx={{ marginRight: 1 }}>
             {t('privacy')}
           </Link>
-          <Link href='impressum' underline='hover'>
+          <Link href='impressum' underline='hover' color='textSecondary'>
             {t('imprint')}
           </Link>
         </Box>

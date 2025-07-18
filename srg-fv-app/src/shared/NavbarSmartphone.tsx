@@ -34,7 +34,7 @@ export function NavbarSmartphone() {
           onClose={handleCloseNavMenu}>
           {authenticated ? (
             <MenuItem onClick={handleCloseNavMenu}>
-              <Link href='/mitglieder' underline='none'>
+              <Link href='/mitglieder' underline='none' color='textPrimary'>
                 {t('members')}
               </Link>
             </MenuItem>
@@ -43,7 +43,7 @@ export function NavbarSmartphone() {
           )}
 
           <MenuItem onClick={handleCloseNavMenu}>
-            <Link href='/antrag' underline='none'>
+            <Link href='/antrag' underline='none' color='textPrimary'>
               {t('applyForMembership')}
             </Link>
           </MenuItem>
@@ -54,7 +54,8 @@ export function NavbarSmartphone() {
           href='/'
           underline='none'
           variant='h6'
-          sx={{ color: 'white', marginRight: 2, fontWeight: 600 }}>
+          color='textPrimary'
+          sx={{ marginRight: 2, fontWeight: 600 }}>
           {t('supportAssociationSrgStuttgart')}
         </Link>
       </Box>

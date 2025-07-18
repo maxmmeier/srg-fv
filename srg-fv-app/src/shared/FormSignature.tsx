@@ -64,7 +64,7 @@ export function FormSignature({ fieldName, fieldState, setValue }: Props) {
         <Button
           onClick={handleClear}
           variant='contained'
-          color='info'
+          color='primary'
           sx={{ position: 'absolute', top: 1, right: 1 }}>
           <ClearIcon />
         </Button>

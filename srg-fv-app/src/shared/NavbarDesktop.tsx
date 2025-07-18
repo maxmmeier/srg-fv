@@ -13,7 +13,8 @@ export function NavbarDesktop() {
         href='/'
         underline='none'
         variant='h6'
-        sx={{ color: 'white', marginRight: 2, fontWeight: 600 }}>
+        color='textPrimary'
+        sx={{ marginRight: 2, fontWeight: 600 }}>
         {t('supportAssociationSrgStuttgart')}
       </Link>
 
@@ -22,7 +23,8 @@ export function NavbarDesktop() {
           href='/mitglieder'
           underline='none'
           variant='h6'
-          sx={{ color: 'white', marginRight: 2 }}>
+          color='textPrimary'
+          sx={{ marginRight: 2 }}>
           {t('members')}
         </Link>
       ) : (
@@ -33,7 +35,8 @@ export function NavbarDesktop() {
         href='antrag'
         underline='none'
         variant='h6'
-        sx={{ color: 'white', marginRight: 2 }}>
+        color='textPrimary'
+        sx={{ marginRight: 2 }}>
         {t('applyForMembership')}
       </Link>
     </Box>

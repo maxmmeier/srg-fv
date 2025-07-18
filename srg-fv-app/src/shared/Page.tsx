@@ -1,9 +1,11 @@
 import { PropsWithChildren } from 'react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import './Page.css';
 import useKeycloak from './useKeycloak';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import CssBaseline from '@mui/material/CssBaseline';
 
 interface PageProps {
   header: string;
@@ -17,18 +19,44 @@ export function Page({ header, children }: PropsWithChildren<PageProps>) {
         <></>
       ) : (
         <>
-          <div className='main-page'>
+          <CssBaseline />
+          <Box>
             <Navbar />
 
-            <Container className='mb-3 mt-2'>
-              <h1>{header}</h1>
-            </Container>
-            <Container className='main-page-container'>{children}</Container>
+            <Box
+              component='main'
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100vh',
+                width: '100%',
+              }}>
+              <Toolbar />
 
-            <Container className='mt-3'>
-              <Footer />
-            </Container>
-          </div>
+              <Container
+                sx={{
+                  marginBottom: 3,
+                  marginTop: 2,
+                }}>
+                <h1>{header}</h1>
+              </Container>
+
+              <Container
+                sx={{
+                  flexGrow: 1,
+                  overflow: 'auto',
+                }}>
+                {children}
+              </Container>
+
+              <Container
+                sx={{
+                  marginTop: 3,
+                }}>
+                <Footer />
+              </Container>
+            </Box>
+          </Box>
         </>
       )}
     </>

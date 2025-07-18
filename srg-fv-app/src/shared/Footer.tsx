@@ -1,3 +1,5 @@
+import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 import { useTranslation } from 'react-i18next';
 
 export function Footer() {
@@ -5,25 +7,38 @@ export function Footer() {
 
   return (
     <>
-      <span>&copy;&nbsp;{t('copyRightSupportAssociation')}</span>
+      <Stack
+        direction='row'
+        spacing={2}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
+        <span>&copy;&nbsp;{t('copyRightSupportAssociation')}</span>
 
-      <span className='float-end'>
-        <a
-          className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
-          href='https://github.com/maxmmeier/srg-fv'>
-          {t('source')}
-        </a>
-        <a
-          className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
-          href='datenschutz'>
-          {t('privacy')}
-        </a>
-        <a
-          className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
-          href='impressum'>
-          {t('imprint')}
-        </a>
-      </span>
+        <span className='float-end'>
+          <Link
+            className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
+            href='https://github.com/maxmmeier/srg-fv'
+            underline='hover'
+            sx={{ marginRight: 1 }}>
+            {t('source')}
+          </Link>
+          <Link
+            className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
+            href='datenschutz'
+            underline='hover'
+            sx={{ marginRight: 1 }}>
+            {t('privacy')}
+          </Link>
+          <Link
+            className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
+            href='impressum'
+            underline='hover'>
+            {t('imprint')}
+          </Link>
+        </span>
+      </Stack>
     </>
   );
 }

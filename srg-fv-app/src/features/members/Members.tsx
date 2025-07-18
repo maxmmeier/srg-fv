@@ -86,7 +86,7 @@ export function Members() {
               <TableRow key={member.id}>
                 <TableCell>{member.firstName}</TableCell>
                 <TableCell>{member.lastName}</TableCell>
-                <TableCell className='text-end'>
+                <TableCell sx={{ textAlign: 'end' }}>
                   <DownloadPdfButton
                     id={member.id}
                     config={config}></DownloadPdfButton>

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import { useTranslation } from 'react-i18next';
@@ -14,30 +15,22 @@ export function Footer() {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-        <span>&copy;&nbsp;{t('copyRightSupportAssociation')}</span>
+        <Box>&copy;&nbsp;{t('copyRightSupportAssociation')}</Box>
 
-        <span className='float-end'>
+        <Box>
           <Link
-            className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
             href='https://github.com/maxmmeier/srg-fv'
             underline='hover'
             sx={{ marginRight: 1 }}>
             {t('source')}
           </Link>
-          <Link
-            className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
-            href='datenschutz'
-            underline='hover'
-            sx={{ marginRight: 1 }}>
+          <Link href='datenschutz' underline='hover' sx={{ marginRight: 1 }}>
             {t('privacy')}
           </Link>
-          <Link
-            className='link-opacity-50-hover link-underline-opacity-0 link-dark me-4'
-            href='impressum'
-            underline='hover'>
+          <Link href='impressum' underline='hover'>
             {t('imprint')}
           </Link>
-        </span>
+        </Box>
       </Stack>
     </>
   );

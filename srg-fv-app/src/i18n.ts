@@ -73,7 +73,7 @@ i18n.use(initReactI18next).init({
         members: 'Mitglieder',
         pageNotFound: 'Die Seite wurde nicht gefunden',
         id: '#',
-        downloadPdf: 'Donwload PDF',
+        downloadPdf: 'Download PDF',
         delete: 'Entfernen',
         close: 'Schließen',
         deleteMemberTitle: `Mitglied '{{name}}' entfernen`,

@@ -11,5 +11,8 @@ export function theme() {
         main: '#dcdbd7',
       },
     },
+    typography: {
+      fontFamily: '"Open Sans", "Arial", sans-serif',
+    },
   });
 }

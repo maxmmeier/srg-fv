@@ -1,12 +1,11 @@
 import { ApplyMembershipOptions } from '../../../srg-fv-contract/applyMembershipOptions';
-import { GetMembershipPdfOptions } from '../../../srg-fv-contract/getMembershipPdfOptions';
 import { ShortMembershipList } from '../../../srg-fv-contract/shortMembershipList';
 import { MembershipPdf } from '../../../srg-fv-contract/membershipPdf';
 import { getConnection } from './logicBase';
 import { ShortMembership } from '../entities/shortmembership';
 import { Membership } from '../entities/membership';
 import { generateMembershipPdf } from '../helper/membershipPdfHelper';
-import { RowDataPacket } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 const itemsPerPage = 15;
 
@@ -59,7 +58,18 @@ export async function addMembership(options: ApplyMembershipOptions) {
     options.sepaSignature,
   ];
 
-  await connection.execute(sql, values);
+  const [result] = await connection.execute<ResultSetHeader>(sql, values);
+
+  const sql2 = `
+    insert into membership_email
+    (id, sent)
+    VALUES
+    (?, ?)
+  `;
+
+  const values2 = [result.insertId, false];
+
+  await connection.execute(sql2, values2);
 }
 
 export async function getMemberships(
@@ -104,9 +114,7 @@ export async function getMemberships(
   } as ShortMembershipList;
 }
 
-export async function getPdf(
-  options: GetMembershipPdfOptions,
-): Promise<MembershipPdf> {
+export async function getMembership(id: number): Promise<Membership> {
   const connection = getConnection();
 
   const sql = `
@@ -114,9 +122,13 @@ export async function getPdf(
     FROM membership
     WHERE id = ?`;
 
-  const [rows] = await connection.execute<Membership[]>(sql, [options.id]);
+  const [rows] = await connection.execute<Membership[]>(sql, [id]);
   const membership = rows[0];
 
+  return membership;
+}
+
+export async function getPdf(membership: Membership): Promise<MembershipPdf> {
   return generateMembershipPdf(membership);
 }
 

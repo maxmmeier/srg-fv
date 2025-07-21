@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import {
   addMembership as internalAddMemebership,
   getMemberships as internalGetMemberships,
+  getMembership as internalGetMembership,
   getPdf as internalGetPdf,
   deleteMembership as internalDeleteMembership,
 } from '../logic/membershipLogic';
@@ -48,7 +49,8 @@ export async function getPdf(req: Request, res: Response, next: NextFunction) {
   try {
     const options = req.body as GetMembershipPdfOptions;
 
-    var pdf = await internalGetPdf(options);
+    var membership = await internalGetMembership(options.id);
+    var pdf = await internalGetPdf(membership);
 
     res.status(200).json(pdf);
   } catch (error) {

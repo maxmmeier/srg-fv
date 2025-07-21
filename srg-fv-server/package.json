@@ -12,6 +12,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.1",
+    "@types/nodemailer": "^6.4.17",
     "@types/pdfkit": "^0.13.9",
     "dotenv": "^16.5.0",
     "eslint": "^9.24.0",
@@ -26,6 +27,8 @@
     "jsonwebtoken": "^9.0.2",
     "keycloak-connect": "^26.1.1",
     "mysql2": "^3.14.0",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.5",
     "pdfkit": "^0.17.0",
     "zod": "^3.25.17"
   }

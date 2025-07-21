@@ -5,6 +5,8 @@ import appointmentRoutes from './routes/appointmentRoutes';
 import { errorHandler } from './middlewares/errorHandler';
 import dotenv from 'dotenv';
 import Keycloak, { KeycloakConfig } from 'keycloak-connect';
+import cron from 'node-cron';
+import { execute } from './jobs/membershipEmailJob';
 
 dotenv.config();
 
@@ -40,5 +42,9 @@ app.use('/api/appointment', appointmentRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);
+
+cron.schedule('* * * * *', async () => {
+  await execute();
+});
 
 export default app;

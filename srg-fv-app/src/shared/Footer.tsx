@@ -14,6 +14,7 @@ export function Footer() {
         sx={{
           justifyContent: 'space-between',
           alignItems: 'center',
+          fontSize: { xs: '10px', md: '16px' },
         }}>
         <Box>&copy;&nbsp;{t('copyRightSupportAssociation')}</Box>
 

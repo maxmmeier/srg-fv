@@ -56,7 +56,7 @@ export function NavbarSmartphone() {
           variant='h6'
           color='textPrimary'
           sx={{ marginRight: 2, fontWeight: 600 }}>
-          {t('supportAssociationSrgStuttgart')}
+          {t('supportAssociationSrgStuttgartShort')}
         </Link>
       </Box>
     </>

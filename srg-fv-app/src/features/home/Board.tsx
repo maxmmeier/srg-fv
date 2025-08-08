@@ -7,7 +7,7 @@ export function Board() {
 
   return (
     <>
-      <Box sx={{ width: '80%' }}>
+      <Box sx={{ width: '100%' }}>
         <Box
           component='img'
           src='src/assets/img-1.jpg'

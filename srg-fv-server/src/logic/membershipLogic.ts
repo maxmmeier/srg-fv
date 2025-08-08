@@ -1,11 +1,11 @@
-import { ApplyMembershipOptions } from '../../../srg-fv-contract/applyMembershipOptions';
-import { ShortMembershipList } from '../../../srg-fv-contract/shortMembershipList';
-import { MembershipPdf } from '../../../srg-fv-contract/membershipPdf';
 import { getConnection } from './logicBase';
 import { ShortMembership } from '../entities/shortmembership';
 import { Membership } from '../entities/membership';
 import { generateMembershipPdf } from '../helper/membershipPdfHelper';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { ApplyMembershipOptions } from '@srg-fv/srg-fv-contract/applyMembershipOptions';
+import { ShortMembershipList } from '@srg-fv/srg-fv-contract/shortMembershipList';
+import { MembershipPdf } from '@srg-fv/srg-fv-contract/membershipPdf';
 
 const itemsPerPage = 15;
 

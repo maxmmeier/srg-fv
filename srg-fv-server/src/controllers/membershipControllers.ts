@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApplyMembershipOptions } from '../../../srg-fv-contract/applyMembershipOptions';
-import { GetMembershipPdfOptions } from '../../../srg-fv-contract/getMembershipPdfOptions';
+import { ApplyMembershipOptions } from '@srg-fv/srg-fv-contract/applyMembershipOptions';
+import { GetMembershipPdfOptions } from '@srg-fv/srg-fv-contract/getMembershipPdfOptions';
 import dotenv from 'dotenv';
 import {
   addMembership as internalAddMemebership,

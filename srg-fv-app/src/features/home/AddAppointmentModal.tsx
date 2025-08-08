@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { AddAppointmentOptions } from '../../../../srg-fv-contract/addAppointmentOptions';
+import { AddAppointmentOptions } from '@srg-fv/srg-fv-contract/addAppointmentOptions';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';

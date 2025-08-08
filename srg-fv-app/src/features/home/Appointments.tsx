@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Appointment } from '../../../../srg-fv-contract/appointments';
+import { Appointment } from '@srg-fv/srg-fv-contract/appointments';
 import axios from 'axios';
 import useKeycloak from '../../shared/useKeycloak';
 import { AddButton } from '../../shared/AddButton';

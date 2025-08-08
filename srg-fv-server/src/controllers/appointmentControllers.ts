@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AddAppointmentOptions } from '../../../srg-fv-contract/addAppointmentOptions';
+import { AddAppointmentOptions } from '@srg-fv/srg-fv-contract/addAppointmentOptions';
 import dotenv from 'dotenv';
 import {
   addAppointment as internalAddAppointment,

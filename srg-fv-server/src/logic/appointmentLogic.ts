@@ -1,4 +1,4 @@
-import { AddAppointmentOptions } from '../../../srg-fv-contract/addAppointmentOptions';
+import { AddAppointmentOptions } from '@srg-fv/srg-fv-contract/addAppointmentOptions';
 import { Appointment } from '../entities/appointment';
 import { getConnection } from './logicBase';
 

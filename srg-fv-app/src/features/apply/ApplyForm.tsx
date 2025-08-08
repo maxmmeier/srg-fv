@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ApplyMembershipOptions } from '../../../../srg-fv-contract/applyMembershipOptions';
+import { ApplyMembershipOptions } from '@srg-fv/srg-fv-contract/applyMembershipOptions';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Typography from '@mui/material/Typography';

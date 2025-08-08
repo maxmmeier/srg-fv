@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { MembershipPdf } from '../../../../srg-fv-contract/membershipPdf';
-import { GetMembershipPdfOptions } from '../../../../srg-fv-contract/getMembershipPdfOptions';
+import { MembershipPdf } from '@srg-fv/srg-fv-contract/membershipPdf';
+import { GetMembershipPdfOptions } from '@srg-fv/srg-fv-contract/getMembershipPdfOptions';
 import axios from 'axios';
 import { Button } from '../../shared/buttons/Button';
 

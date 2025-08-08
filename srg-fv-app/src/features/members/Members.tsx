@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { ShortMembership } from '../../../../srg-fv-contract/shortMembership';
+import { ShortMembership } from '@srg-fv/srg-fv-contract/shortMembership';
 import { useTranslation } from 'react-i18next';
 import useKeycloak from '../../shared/useKeycloak';
 import { ConfirmationModal } from '../../shared/ConfirmationModal';

@@ -1,0 +1,7 @@
+{
+  "name": "@srg-fv/srg-fv-contract",
+  "version": "0.0.2",
+  "description": "constracts for srg-fv",
+  "author": "Förderverein SRG Stuttgart e.V. <foerderverein@srg-stuttgart.de>",
+  "license": "MIT"
+}

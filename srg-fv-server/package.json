@@ -1,0 +1,36 @@
+{
+  "name": "srg-fv-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec npx ts-node src/server.ts",
+    "lint": "eslint 'src/**/*.ts'"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.1",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pdfkit": "^0.13.9",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.24.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@srg-fv/srg-fv-contract": "^0.0.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "keycloak-connect": "^26.1.1",
+    "mysql2": "^3.14.0",
+    "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.5",
+    "pdfkit": "^0.17.0",
+    "zod": "^3.25.17"
+  }
+}

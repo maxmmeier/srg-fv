@@ -7,32 +7,32 @@ export const useContainerDimensions = (myRef: any) => {
     const paddingTop = parseInt(
       window
         .getComputedStyle(myRef.current)
-        .getPropertyValue('padding-top')
+        .getPropertyValue('border-top-width')
         .replace('px', ''),
     );
     const paddingBottom = parseInt(
       window
         .getComputedStyle(myRef.current)
-        .getPropertyValue('padding-bottom')
+        .getPropertyValue('border-bottom-width')
         .replace('px', ''),
     );
     const paddingLeft = parseInt(
       window
         .getComputedStyle(myRef.current)
-        .getPropertyValue('padding-left')
+        .getPropertyValue('border-left-width')
         .replace('px', ''),
     );
     const paddingRight = parseInt(
       window
         .getComputedStyle(myRef.current)
-        .getPropertyValue('padding-right')
+        .getPropertyValue('border-right-width')
         .replace('px', ''),
     );
 
     const getDimensions = () => ({
       width: (myRef.current.offsetWidth as number) - paddingLeft - paddingRight,
       height:
-        (myRef.current.offsetHeight as number) - paddingTop - paddingBottom,
+        (myRef.current.offsetHeight as number) - paddingTop - paddingBottom - 1,
     });
 
     const handleResize = () => {

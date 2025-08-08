@@ -1,0 +1,16 @@
+{
+    "singleQuote": true,
+    "jsxSingleQuote": true,
+    "semi": true,
+    "trailingComma": "all",
+    "bracketSameLine": true,
+    "endOfLine": "auto",
+    "overrides": [
+        {
+            "files": "*.scss",
+            "options": {
+                "singleQuote": false
+            }
+        }
+    ]
+}
